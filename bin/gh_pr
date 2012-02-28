@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Script to open a browser to current branch
+
+get_repo() {
+    # TODO Find different schemes instead of just ssh
+    git remote -v | grep -E -o "git@github.com:[^ ]*" | while read remote; do
+        echo $remote
+        break
+    done
+}
+
+# This is broken, catch the 3 obvious schemes and parse differently into a url
+repo=`get_repo| sed -e "s/^git@//" -e "s/:/\//" -e "s/\.git$//"`
+
+# This is kludge, but seems easiest
+branch=`git symbolic-ref HEAD 2>/dev/null`
+branch=${branch##refs/heads/}
+
+url="http://$repo/pull/new/$branch"
+
+echo $url
