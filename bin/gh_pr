@@ -7,7 +7,7 @@
 # git   git://github.com/richoH/gh_pr.git
 
 get_repo() {
-    # TODO Find different schemes instead of just ssh
+    # TODO Work out which repo is ours and which is upstream?
     git remote -v | while read remote; do
       if repo=`echo $remote | grep -E -o "git@github.com:[^ ]*"`; then
           echo $repo | sed -e "s/^git@github\.com//" -e "s/:/\//" -e "s/\.git$//"
