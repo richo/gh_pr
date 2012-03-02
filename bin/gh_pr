@@ -31,11 +31,7 @@ get_repo() {
 
 if repo=`get_repo`; then
     branch=`git symbolic-ref HEAD 2>/dev/null`
-    branch=${branch##refs/heads/}
-
-    url="http://github.com/$repo/pull/new/$branch"
-
-    echo $url
+    echo "http://github.com/$repo/pull/new/${branch##refs/heads/}"
 else
     exit 1
 fi
