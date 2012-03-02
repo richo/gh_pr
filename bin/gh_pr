@@ -10,25 +10,32 @@ get_repo() {
     # TODO Work out which repo is ours and which is upstream?
     git remote -v | while read remote; do
       if repo=`echo $remote | grep -E -o "git@github.com:[^ ]*"`; then
-          echo $repo | sed -e "s/^git@github\.com//" -e "s/:/\//" -e "s/\.git$//"
-          break
+          echo $repo | sed -e "s/^git@github\.com://" -e "s/\.git$//"
+          exit 1
       fi
       if repo=`echo $remote | grep -E -o "https?://([^@]*@)?github.com/[^ ]*\.git"`; then
           echo $repo | sed -e "s|^https?://||" -e "s/^.*github\.com\///" -e "s/\.git$//"
-          break
+          exit 1
       fi
       if repo=`echo $remote | grep -E -o "git://github.com/[^ ]*\.git"`; then
           echo $repo | sed -e "s|^git://github.com/||" -e "s/\.git$//"
-          break
+          exit 1
       fi
     done
+
+    if [ $? -eq 0 ]; then
+        echo "Couldn't find a valid remote" >&2
+        exit 1
+    fi
 }
 
-repo=`get_repo`
-# This is kludge, but seems easiest
-branch=`git symbolic-ref HEAD 2>/dev/null`
-branch=${branch##refs/heads/}
+if repo=`get_repo`; then
+    branch=`git symbolic-ref HEAD 2>/dev/null`
+    branch=${branch##refs/heads/}
 
-url="http://github.com/$repo/pull/new/$branch"
+    url="http://github.com/$repo/pull/new/$branch"
 
-echo $url
+    echo $url
+else
+    exit 1
+fi
