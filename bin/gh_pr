@@ -17,6 +17,10 @@ get_repo() {
           echo $repo | sed -e "s|^https?://||" -e "s/^.*github\.com\///" -e "s/\.git$//"
           break
       fi
+      if repo=`echo $remote | grep -E -o "git://github.com/[^ ]*\.git"`; then
+          echo $repo | sed -e "s|^git://github.com/||" -e "s/\.git$//"
+          break
+      fi
     done
 }
 
