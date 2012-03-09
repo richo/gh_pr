@@ -6,9 +6,10 @@
 # http  https://richoH@github.com/richoH/gh_pr.git
 # git   git://github.com/richoH/gh_pr.git
 
+username=`git config --get github.user`
+
 get_repo() {
-    # TODO Work out which repo is ours and which is upstream?
-    git remote -v | while read remote; do
+    git remote -v | grep ${@:-$username} | while read remote; do
       if repo=`echo $remote | grep -E -o "git@github.com:[^ ]*"`; then
           echo $repo | sed -e "s/^git@github\.com://" -e "s/\.git$//"
           exit 1
@@ -29,7 +30,7 @@ get_repo() {
     fi
 }
 
-if repo=`get_repo`; then
+if repo=`get_repo $@`; then
     branch=`git symbolic-ref HEAD 2>/dev/null`
     echo "http://github.com/$repo/pull/new/${branch##refs/heads/}"
 else
